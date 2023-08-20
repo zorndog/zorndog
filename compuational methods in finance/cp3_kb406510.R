@@ -1,0 +1,101 @@
+library(randtoolbox)
+
+
+
+twodim_normal <- function(){
+  u<- runif(2)
+  x<-2*pi*u[2]
+  y<-sqrt(-2*log(u[1]))
+  Z <- numeric(2)
+  Z[1] <- y*cos(x)
+  Z[2] <- y*sin(x)
+  return(Z)
+}
+corr <- function(rho){
+  B <- matrix(nrow = 2,ncol = 2)
+  B[1,1]<-1
+  B[1,2]<-0
+  B[2,1]<-rho
+  B[2,2] <- sqrt(1-rho^2)
+  return(B)
+}
+
+#Generating two dim wiener process with constant correlation rho
+
+twodimBM <- function(n,rho,TTM){
+  W <- matrix(nrow=2,ncol=1)
+  delta_t <- TTM/n
+  W[1,1]=0
+  W[2,1]=0
+  B <- corr(rho)
+  for (i in 2:n){
+    Z <- twodim_normal()
+    W_ti <- c(2)
+    W_ti <- W[,(i-1)] + sqrt(delta_t)*(B%*%Z)
+    W <- cbind(W,W_ti)
+  }
+  return(W)
+}
+
+trajS <- function(S0,V0,r,sigma,kappa,theta,rho,TTM,K,n,M){
+  Z <- twodim_normal()
+  BM <- twodimBM(n,rho,TTM)
+  delta_t <- TTM/n
+  V_t <-numeric(n)
+  antiV_t <- numeric(n)
+  antiS_t <- numeric(n)
+  S_t <- numeric(n)
+  antiV_t[1] <- V0
+  antiS_t[1] <- S0
+  V_t[1] <- V0
+  S_t[1] <- S0
+  for (i in 2:n) {
+    
+    V_t[i] <- V_t[i - 1] + (kappa * V_t[i - 1] * (theta - V_t[i - 1])) * delta_t +
+      (sigma * (V_t[i - 1])^(3/2)) * (BM[2, i] - BM[2, i - 1]) +
+      1/2 * (sigma * (V_t[i - 1])^(3/2)) * (3/2 * sigma * sqrt(V_t[i - 1])) * ((BM[2, i] - BM[2, i - 1])^2 - delta_t)
+    
+    S_t[i] <- S_t[i - 1] + S_t[i - 1] * r * delta_t + S_t[i - 1] * V_t[i - 1] * (BM[1, i] - BM[1, i - 1])
+    
+    antiV_t[i] <- V_t[i - 1] + (kappa * V_t[i - 1] * (theta - V_t[i - 1])) * delta_t +
+      (sigma * (V_t[i - 1])^(3/2)) * (BM[2, i - 1] - BM[2, i]) +
+      1/2 * (sigma * (V_t[i - 1])^(3/2)) * (3/2 * sigma * sqrt(V_t[i - 1])) * ((BM[2, i] - BM[2, i - 1])^2 - delta_t)
+    
+    antiS_t[i] <- S_t[i - 1] + S_t[i - 1] * r * delta_t + S_t[i - 1] * V_t[i - 1] * (BM[1, i - 1] - BM[1, i])
+  }
+  antiS <- numeric(2)
+  antiS[1] <- S_t[n]
+  antiS[2] <- antiS_t[n]
+  return(antiS)
+}
+
+
+SV32call_MC<-function(S0,V0,r,sigma,kappa,theta,rho,TTM,K,n,M){
+  S_T <- c(2)
+  exercise <- c(M)
+  
+  for(i in 1:M){
+    S_T<-trajS(S0,V0,r,sigma,kappa,theta,rho,TTM,K,n,M)
+    exercise[i] <- (max(S_T[1]-K,0) + max(S_T[2]-K,0))/2
+  }
+  avg<-(sum(exercise))/M
+  price <- exp(-r*TTM)*avg
+  b <- numeric(M)
+   for(i in 1:M){
+     b[i] <- (exp(-r*TTM)*exercise[i]-price)^2
+   }
+  b_M <- 1/(M-1) * sum(b)
+  
+  conf <- numeric(2)
+  
+  conf[1] <- price - (1.96 * sqrt(b_M))/sqrt(M)
+  
+  conf[2] <- price + (1.96 * sqrt(b_M))/sqrt(M)
+  
+  cat("Cena calla: ",price,"\n")
+  cat("Przedia³ ufnoœci: ",conf[1], conf[2],"\n")
+
+}
+
+SV32call_MC(50,0.06,0.05,0.2,40,0.05,0.1,2,45,500,100000)
+
