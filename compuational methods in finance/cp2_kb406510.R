@@ -1,0 +1,63 @@
+library(randtoolbox)
+
+options(digits = 10, scipen = 999)
+PutMC <- function(cp2_data.txt) {
+  data <- read.table(cp2_data.txt)
+  S0 <- data[1,1]
+  r <- data[1,2]
+  sigma <- data[1,3]
+  T <- data[1,4]
+  K <- data[1,5]
+  M <- data[1,6]
+  
+  V <- numeric(M)
+  for(i in 1:M){
+    u <- runif(2)
+    z <- c(
+      sqrt(-2*log(u[1]))*cos(2*pi*u[2]),
+      sqrt(-2*log(u[1]))*sin(2*pi*u[2])
+    )
+    S_1 <- S0*exp((r- 1/2*sigma^2)*T + sigma*sqrt(T)*z[1])
+    S_2 <- S0*exp((r- 1/2*sigma^2)*T - sigma*sqrt(T)*z[2])
+    V_1 <- exp(-r*T) * max(K-S_1, 0)
+    V_2 <- exp(-r*T) * max(K-S_2, 0)
+    V[i] <- (V_1 + V_2)/2
+  }
+  a_M <- mean(V)
+  x <- sum((V-a_M)^2)
+  b_M2 <- 1/(M-1)*x
+ conf <-numeric(2)
+ conf[1] <- a_M - (1.96*sqrt(b_M2))/sqrt(M)
+ conf[2] <- a_M + (1.96*sqrt(b_M2))/sqrt(M)
+ cat("Cena PutMC: ",a_M,"\n")
+ cat("Przedia³ ufnoœci: ",conf,"\n")
+ 
+ Va <- c()
+ seq <- halton(M * 2,dim=2)
+ for (i in 1:M) {
+   z <- c()
+   S <-c()
+   z[1] <- sqrt(-2 * log(seq[i, 1])) * cos(2 * pi * seq[i, 2])
+   z[2] <- sqrt(-2 * log(seq[i, 1])) * sin(2 * pi * seq[i, 2])
+   S[1] <- S0 * exp((r - 0.5 * sigma^2) * T + sigma * sqrt(T) * z[1])
+   S[2] <- S0 * exp((r - 0.5 * sigma^2) * T + sigma * sqrt(T) * z[2])
+   Va[i] <- (exp(-r * T) * max(K-S[1], 0)+exp(-r * T) * max(K-S[2], 0))/2
+ }
+ c_M <- 1 / M * sum(Va)
+ cat("Cena PutQMC: ",c_M,"\n")
+ 
+ d_1 <- (log(S0/K)+(r+1/2*sigma^2)*T)/(sigma*sqrt(T))
+ d_2 <- d_1 - sigma*sqrt(T)
+ p<-exp(-r*T)*K*pnorm(-d_2)-S0*pnorm(-d_1)
+ cat("Cena put ze wzorku Blacka-Scholesa: ",p,"\n")
+ 
+ err1 <- abs(a_M-p)/abs(p)
+ cat("B³¹d wzglêdny dla Monte Carlo: ",err1,"\n")
+ cat("B³¹d teoretyczny dla Monte Carlo: ",1/sqrt(M),"\n")
+ err2 <- abs(c_M-p)/abs(p)
+ cat("B³¹d wzglêdny dla Quasi Monte Carlo: ",err2,"\n")
+ cat("B³¹d teoretyczny dla Quasi Monte Carlo: ",1/M,"\n")
+ cat("M = ",M,"\n")
+} 
+PutMC("cp2_data.txt")
+
