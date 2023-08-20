@@ -93,7 +93,7 @@ SV32call_MC<-function(S0,V0,r,sigma,kappa,theta,rho,TTM,K,n,M){
   conf[2] <- price + (1.96 * sqrt(b_M))/sqrt(M)
   
   cat("Cena calla: ",price,"\n")
-  cat("Przedia³ ufnoœci: ",conf[1], conf[2],"\n")
+  cat("PrzediaÂ³ ufnoÅ“ci: ",conf[1], conf[2],"\n")
 
 }
 
