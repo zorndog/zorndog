@@ -30,7 +30,7 @@ PutMC <- function(cp2_data.txt) {
  conf[1] <- a_M - (1.96*sqrt(b_M2))/sqrt(M)
  conf[2] <- a_M + (1.96*sqrt(b_M2))/sqrt(M)
  cat("Cena PutMC: ",a_M,"\n")
- cat("Przedia³ ufnoœci: ",conf,"\n")
+ cat("PrzediaÂ³ ufnoÅ“ci: ",conf,"\n")
  
  Va <- c()
  seq <- halton(M * 2,dim=2)
@@ -52,11 +52,11 @@ PutMC <- function(cp2_data.txt) {
  cat("Cena put ze wzorku Blacka-Scholesa: ",p,"\n")
  
  err1 <- abs(a_M-p)/abs(p)
- cat("B³¹d wzglêdny dla Monte Carlo: ",err1,"\n")
- cat("B³¹d teoretyczny dla Monte Carlo: ",1/sqrt(M),"\n")
+ cat("BÂ³Â¹d wzglÃªdny dla Monte Carlo: ",err1,"\n")
+ cat("BÂ³Â¹d teoretyczny dla Monte Carlo: ",1/sqrt(M),"\n")
  err2 <- abs(c_M-p)/abs(p)
- cat("B³¹d wzglêdny dla Quasi Monte Carlo: ",err2,"\n")
- cat("B³¹d teoretyczny dla Quasi Monte Carlo: ",1/M,"\n")
+ cat("BÂ³Â¹d wzglÃªdny dla Quasi Monte Carlo: ",err2,"\n")
+ cat("BÂ³Â¹d teoretyczny dla Quasi Monte Carlo: ",1/M,"\n")
  cat("M = ",M,"\n")
 } 
 PutMC("cp2_data.txt")
