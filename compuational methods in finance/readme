@@ -1,0 +1,34 @@
+Some code in R written during the course computational methods in finance. It's divided into 4 files:
+
+1. The Binomial Model and the Greeks
+  Function which calculates the prices of standard European and American put options and their
+  Greeks: dekta, gamma and theta using the binomial CRR model
+
+2.  Monte Carlo method for option prices
+  Stock price is given by geometric Brownian motion. This program calculates the price of European
+  put option by the Monte Carlo method using the standard uniform random numbers generator and
+  by the Quasi Monte Carlo method using the Halton sequence to generate quasi-random numbers.
+  Both methods use the Box-Muller algorithm to generate random deviates. MC method uses antithetic variates.
+  Program prints out the computed prices and 95% confidence interval for MC and the relative errors 
+  of the computed prices |price - price_BS|/|price_BS| (relative to the analytical Black-Scholes formula)
+
+3. Pricing European options in 3/2 model of stochastic volatility:
+  The stock price follows the 3/2 model of stochastic volatility:
+     dS_t = S_t * r dt + S_t * sqrt(V_t) dW_t^S
+     dV_t = k * V_t * (theta - V_t) dt + sigma * V_t^(3/2) dW_t^V
+  This program gives function which calculates the price of European call in this model by 
+  the Monte Carlo method. The function computes S_T by calculating trajectories of S_t by the
+  Euler-Maruyama scheme and trajectories of V_t (volatility process in the 3/2 model) by Milstein scheme.
+
+4. Pricing bearish vertical put spread
+  A bearish vertical put spread option strategy is a contract with the payoff
+        h(S_t,K) = (K_2 - S)^+ - (K_1 - S)^+.
+  Code for a function which calculates the price and delta of the bearish vertical put spread
+  under the Black-Scholes model by the PDE method. The function computes the results in the
+  transformed variables of the Black-Scholes equation. The function needs following inputs:
+  initial stock price, risk-free interest rate, volatility, TTM, strikes K_1, K_2
+  and inputs for the numerical schemes:
+  number of points in the direction of t variable Mt, number of points in the direction of x variable Mx, 
+  left truncation point of the space domain, smin =0, right truncation point of the space domain, smax = 200
+  The function uses both the implicit and the Crank-Nicolson schemes to solve the corresponding boundary value
+  problem.
