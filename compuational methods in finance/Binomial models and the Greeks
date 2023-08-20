@@ -1,0 +1,2 @@
+R code function which calculates the prices of standard European and American put
+options and their Greeks: delta, gamma and theta using the binomial CRR model
