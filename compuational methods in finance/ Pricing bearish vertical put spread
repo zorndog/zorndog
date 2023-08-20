@@ -45,7 +45,7 @@ bvpsPDE = function(S0 = 100, r = 0.05, sigma = 0.2, T = 0.25, K1 = 90, K2 = 110,
   y_initial_xmax <- 0
   
   
-  print("Proszê wybraæ schemat")
+  print("ProszÃª wybraÃ¦ schemat")
   var = readline(prompt = "1.Implicit Euler 2.Crank-Nicolson) : ");
   var = as.character(var)
   
@@ -94,7 +94,7 @@ bvpsPDE = function(S0 = 100, r = 0.05, sigma = 0.2, T = 0.25, K1 = 90, K2 = 110,
     par(mfrow = c(1,2))
     plot(S,cena, type = "l", xlab = "S",
          ylab = "Cena opcji", col = "blue",
-         main = "Wartoœæ opcji (Implicit Euler)")
+         main = "WartoÅ“Ã¦ opcji (Implicit Euler)")
     abline(v = S0)
     
     wektor_s_short = S[-1]
@@ -161,7 +161,7 @@ bvpsPDE = function(S0 = 100, r = 0.05, sigma = 0.2, T = 0.25, K1 = 90, K2 = 110,
     
     plot(S,cena2, type = "l", xlab = "S",
          ylab = "Cena opcji", col = "blue",
-         main = "Wartoœæ opcji (Crank-Nicolson)")
+         main = "WartoÅ“Ã¦ opcji (Crank-Nicolson)")
     abline(v = S0)
     
     wektor_s_short = S[-1]
@@ -177,7 +177,7 @@ bvpsPDE = function(S0 = 100, r = 0.05, sigma = 0.2, T = 0.25, K1 = 90, K2 = 110,
   
   }
   if((var !="1") & (var !="2")){
-    print("Spróbuj ponownie")
+    print("SprÃ³buj ponownie")
   }
   
 }
